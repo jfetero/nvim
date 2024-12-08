@@ -19,6 +19,7 @@ keymap.set("n", "<leader>Y", '"+Y')
 -- Deleting without Yanking
 keymap.set("n", "<leader>d", '"_d', { desc = "Delete w/o yank" })
 keymap.set("v", "<leader>d", '"_d', { desc = "Delete w/o yank" })
+keymap.set("n", "x", '"_x', { desc = "Delete w/o yank" })
 
 keymap.set("n", "<leader>r", ":%s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI<Left><Left><Left>", { desc = "Replace word" })
 keymap.set("n", "<leader>X", "<cmd>!chmod +x %<CR>", opts)
