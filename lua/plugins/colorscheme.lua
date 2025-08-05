@@ -56,6 +56,7 @@ return {
     opts = function()
       return {
         transparent = true,
+        italic_comments = true,
       }
     end,
   },

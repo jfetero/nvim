@@ -4,7 +4,7 @@
 local keymap = vim.keymap
 local opts = { noremap = true, silent = true }
 
-keymap.set("n", "<C-f>", ":!tmux neww tmux-sessionizer<CR>")
+keymap.set("n", "<C-f>", "<cmd>term tms switch<CR>")
 keymap.set("n", "<C-d>", "<c-d>zz")
 keymap.set("n", "<C-u>", "<c-u>zz")
 keymap.set("n", "Y", "y$")
