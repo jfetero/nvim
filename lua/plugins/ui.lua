@@ -119,9 +119,20 @@ return {
     event = "VeryLazy",
     opts = {
       options = {
-        -- globalstatus = false,
-        theme = "onedark",
+        globalstatus = true,
+        theme = "auto",
       },
+      extensions = {},
+      -- Make lualine background transparent
+      -- This function runs after lualine loads
+      config = function()
+        vim.api.nvim_set_hl(0, "lualine_c_normal", { bg = "none" })
+        vim.api.nvim_set_hl(0, "lualine_b_normal", { bg = "none" })
+        vim.api.nvim_set_hl(0, "lualine_a_normal", { bg = "none" })
+        vim.api.nvim_set_hl(0, "lualine_c_inactive", { bg = "none" })
+        vim.api.nvim_set_hl(0, "lualine_b_inactive", { bg = "none" })
+        vim.api.nvim_set_hl(0, "lualine_a_inactive", { bg = "none" })
+      end,
     },
   },
 

@@ -1,16 +1,7 @@
 return {
   {
-    "sainnhe/sonokai",
-    lazy = true,
-    priority = 1000,
-    opts = function()
-      vim.g.sonokai_transparent_background = "1"
-      vim.g.sonokai_enable_italic = "1"
-    end,
-  },
-  {
     "navarasu/onedark.nvim",
-    lazy = true,
+    lazy = false,
     priority = 1000,
     opts = function()
       return {
@@ -21,7 +12,7 @@ return {
   },
   {
     "folke/tokyonight.nvim",
-    lazy = true,
+    lazy = false,
     priority = 1000,
     opts = function()
       return {
@@ -31,11 +22,14 @@ return {
   },
   {
     "craftzdog/solarized-osaka.nvim",
-    lazy = true,
+    lazy = false,
     priority = 1000,
     opts = function()
       return {
         transparent = true,
+        day_brightness = 1,
+        im_inactive = true, -- dims inactive windows
+        -- lualine_bold = true,
       }
     end,
   },
@@ -58,6 +52,18 @@ return {
         transparent = true,
         italic_comments = true,
       }
+    end,
+  },
+  {
+    "EdenEast/nightfox.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = function()
+      require("nightfox").setup({
+        options = {
+          transparent = true,
+        },
+      })
     end,
   },
 }
