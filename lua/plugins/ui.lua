@@ -63,7 +63,7 @@ return {
 
   -- animations
   {
-    "echasnovski/mini.animate",
+    "nvim-mini/mini.animate",
     event = "VeryLazy",
     opts = function(_, opts)
       opts.scroll = {
@@ -100,6 +100,25 @@ return {
         },
       },
     },
+    keys = {
+      { "<leader>bh", "<cmd>BufferLineMovePrev<cr>", desc = "Move buffer left" },
+      { "<leader>bl", "<cmd>BufferLineMoveNext<cr>", desc = "Move buffer right" },
+      {
+        "<leader>bs",
+        function()
+          local bufs = vim.tbl_filter(function(buf)
+            return vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buflisted
+          end, vim.api.nvim_list_bufs())
+          table.sort(bufs, function(a, b)
+            return vim.api.nvim_buf_get_name(a) < vim.api.nvim_buf_get_name(b)
+          end)
+          for i, buf in ipairs(bufs) do
+            vim.cmd(i .. "buf " .. buf)
+          end
+        end,
+        desc = "Sort buffers by path",
+      },
+    },
     config = function(_, opts)
       require("bufferline").setup(opts)
       -- Fix bufferline when restoring a session
@@ -112,6 +131,7 @@ return {
       })
     end,
   },
+  { "nvim-mini/mini.bufremove", event = "VeryLazy" },
 
   -- statusline
   {

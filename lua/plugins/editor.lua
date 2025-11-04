@@ -99,14 +99,6 @@ return {
         desc = "Lists Diagnostics for all open buffers or a specific buffer",
       },
       {
-        ";s",
-        function()
-          local builtin = require("telescope.builtin")
-          builtin.treesitter()
-        end,
-        desc = "Lists Function names, variables, from Treesitter",
-      },
-      {
         "sf",
         function()
           local telescope = require("telescope")
@@ -187,5 +179,29 @@ return {
       require("telescope").load_extension("fzf")
       require("telescope").load_extension("file_browser")
     end,
+  },
+  {
+    "folke/ts-comments.nvim",
+    opts = {
+      lang = {
+        hcl = {
+          "# %s",
+          "// %s",
+          "/* %s */",
+        },
+        terraform = {
+          "# %s",
+          "// %s",
+          "/* %s */",
+        },
+      },
+    },
+    event = "VeryLazy",
+    enabled = vim.fn.has("nvim-0.10.0") == 1,
+  },
+  {
+    "sQVe/sort.nvim",
+    cmd = { "Sort" },
+    config = true,
   },
 }

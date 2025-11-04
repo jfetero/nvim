@@ -1,9 +1,9 @@
 return {
-  { "mason-org/mason.nvim", version = "1.11.0" },
-  { "mason-org/mason-lspconfig.nvim", version = "1.32.0" },
+  -- { "mason-org/mason.nvim", version = "1.11.0" },
+  -- { "mason-org/mason-lspconfig.nvim", version = "1.32.0" },
   -- tools
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = function(_, opts)
       vim.list_extend(opts.ensure_installed, {
         "stylua",
