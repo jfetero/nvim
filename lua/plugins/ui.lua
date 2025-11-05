@@ -76,30 +76,6 @@ return {
   {
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
-    opts = {
-      options = {
-      -- stylua: ignore
-      close_command = function(n) require("mini.bufremove").delete(n, false) end,
-      -- stylua: ignore
-      right_mouse_command = function(n) require("mini.bufremove").delete(n, false) end,
-        diagnostics = "nvim_lsp",
-        always_show_bufferline = false,
-        diagnostics_indicator = function(_, _, diag)
-          local icons = require("lazyvim.config").icons.diagnostics
-          local ret = (diag.error and icons.Error .. diag.error .. " " or "")
-            .. (diag.warning and icons.Warn .. diag.warning or "")
-          return vim.trim(ret)
-        end,
-        offsets = {
-          {
-            filetype = "neo-tree",
-            text = "Neo-tree",
-            highlight = "Directory",
-            text_align = "left",
-          },
-        },
-      },
-    },
     keys = {
       { "<leader>bh", "<cmd>BufferLineMovePrev<cr>", desc = "Move buffer left" },
       { "<leader>bl", "<cmd>BufferLineMoveNext<cr>", desc = "Move buffer right" },
@@ -119,41 +95,263 @@ return {
         desc = "Sort buffers by path",
       },
     },
-    config = function(_, opts)
-      require("bufferline").setup(opts)
-      -- Fix bufferline when restoring a session
-      vim.api.nvim_create_autocmd("BufAdd", {
-        callback = function()
-          vim.schedule(function()
-            pcall(nvim_bufferline)
-          end)
+    opts = {
+      options = {
+      -- Use mini.bufremove
+      -- stylua: ignore
+      close_command = function(n) require("mini.bufremove").delete(n, false) end,
+      -- stylua: ignore
+      right_mouse_command = function(n) require("mini.bufremove").delete(n, false) end,
+
+        -- LSP features (already enabled)
+        diagnostics = "nvim_lsp",
+
+        -- Don't show the bar if there is only one buffer
+        always_show_bufferline = false,
+
+        -- LSP diagnostics indicator
+        diagnostics_indicator = function(_, _, diag)
+          -- Assumes you have 'lazyvim.config'
+          -- If not, replace 'icons' with your own table: e.g., local icons = { Error = " ", Warn = " " }
+          local icons = require("lazyvim.config").icons.diagnostics
+          local ret = (diag.error and icons.Error .. diag.error .. " " or "")
+            .. (diag.warning and icons.Warn .. diag.warning or "")
+          return vim.trim(ret)
         end,
-      })
-    end,
+
+        -- Offset for neo-tree
+        offsets = {
+          {
+            filetype = "neo-tree",
+            text = "Neo-tree",
+            highlight = "Directory",
+            text_align = "left",
+          },
+        },
+      },
+      highlights = {
+        -- Set all background highlights to 'NONE'
+        background = { bg = "NONE" },
+        fill = { bg = "NONE" },
+
+        -- Buffer states
+        buffer_selected = { bg = "NONE" },
+        buffer_visible = { bg = "NONE" },
+
+        -- Diagnostic states
+        diagnostic_selected = { bg = "NONE" },
+        diagnostic_visible = { bg = "NONE" },
+
+        -- Separators
+        separator = { bg = "NONE" },
+        separator_visible = { bg = "NONE" },
+        separator_selected = { bg = "NONE" },
+        offset_separator = { bg = "NONE" },
+      },
+    },
   },
   { "nvim-mini/mini.bufremove", event = "VeryLazy" },
 
   -- statusline
+
   {
     "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
-    opts = {
-      options = {
-        globalstatus = true,
-        theme = "auto",
-      },
-      extensions = {},
-      -- Make lualine background transparent
-      -- This function runs after lualine loads
-      config = function()
-        vim.api.nvim_set_hl(0, "lualine_c_normal", { bg = "none" })
-        vim.api.nvim_set_hl(0, "lualine_b_normal", { bg = "none" })
-        vim.api.nvim_set_hl(0, "lualine_a_normal", { bg = "none" })
-        vim.api.nvim_set_hl(0, "lualine_c_inactive", { bg = "none" })
-        vim.api.nvim_set_hl(0, "lualine_b_inactive", { bg = "none" })
-        vim.api.nvim_set_hl(0, "lualine_a_inactive", { bg = "none" })
-      end,
-    },
+    event = "BufWinEnter",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = function()
+      -- 1. DEFINE GRUVBOX COLORS
+      -- This table now uses the gruvbox palette
+      local colors = {
+        bg = "#282828",
+        fg = "#ebdbb2",
+        yellow = "#fabd2f", -- Diagnostics warn
+        cyan = "#8ec07c", -- LSP (aqua)
+        green = "#b8bb26", -- Git added
+        orange = "#fe8019", -- Git modified
+        violet = "#d3869b", -- Git branch (purple)
+        magenta = "#d3869b", -- Filename (purple)
+        blue = "#83a598", -- Side bars |
+        red = "#fb4934", -- Mode, Diagnostics error
+      }
+
+      -- 2. DEFINE CONDITIONS
+      local conditions = {
+        buffer_not_empty = function()
+          return vim.fn.empty(vim.fn.expand("%:t")) ~= 1
+        end,
+        hide_in_width = function()
+          return vim.fn.winwidth(0) > 80
+        end,
+      }
+
+      -- 3. DEFINE THE MAIN CONFIG (using the evil_lualine.lua logic)
+      local config = {
+        options = {
+          component_separators = "",
+          section_separators = "",
+          theme = {
+            -- Set the base theme colors
+            normal = { c = { fg = colors.fg, bg = colors.bg } },
+            inactive = { c = { fg = colors.fg, bg = colors.bg } },
+          },
+        },
+        sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_y = {},
+          lualine_z = {},
+          lualine_c = {},
+          lualine_x = {},
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_y = {},
+          lualine_z = {},
+          lualine_c = {},
+          lualine_x = {},
+        },
+      }
+
+      -- 4. MANUALLY BUILD THE LEFT SECTION (lualine_c)
+      config.sections.lualine_c = {
+        -- Left-most bar
+        {
+          function()
+            return "|"
+          end,
+          color = { fg = colors.blue },
+          padding = { left = 0, right = 1 },
+        },
+        -- Mode icon
+        {
+          function()
+            return ""
+          end, -- You can change this icon
+          color = function()
+            -- Use gruvbox colors for modes
+            local mode_color = {
+              n = colors.red,
+              i = colors.green,
+              v = colors.blue,
+              [""] = colors.blue,
+              V = colors.blue,
+              c = colors.magenta,
+              no = colors.red,
+              s = colors.orange,
+              S = colors.orange,
+              [""] = colors.orange,
+              ic = colors.yellow,
+              R = colors.violet,
+              Rv = colors.violet,
+              cv = colors.red,
+              ce = colors.red,
+              r = colors.cyan,
+              rm = colors.cyan,
+              ["r?"] = colors.cyan,
+              ["!"] = colors.red,
+              t = colors.red,
+            }
+            return { fg = mode_color[vim.fn.mode()] }
+          end,
+          padding = { right = 1 },
+        },
+        -- Filesize
+        {
+          "filesize",
+          cond = conditions.buffer_not_empty,
+        },
+        -- Filename
+        {
+          "filename",
+          cond = conditions.buffer_not_empty,
+          color = { fg = colors.magenta, gui = "bold" },
+        },
+        -- Location
+        { "location" },
+        -- Progress
+        { "progress", color = { fg = colors.fg, gui = "bold" } },
+        -- Diagnostics
+        {
+          "diagnostics",
+          sources = { "nvim_lsp" },
+          symbols = { error = " ", warn = " ", info = " ", hint = " " },
+          diagnostics_color = {
+            error = { fg = colors.red },
+            warn = { fg = colors.yellow },
+            info = { fg = colors.cyan },
+          },
+        },
+        -- Spacer
+        {
+          function()
+            return "%="
+          end,
+        },
+        -- LSP Client
+        {
+          function()
+            local clients = vim.lsp.get_active_clients({ bufnr = 0 })
+            if #clients == 0 then
+              return ""
+            end
+            local client_names = {}
+            for _, client in ipairs(clients) do
+              table.insert(client_names, client.name)
+            end
+            return table.concat(client_names, ", ")
+          end,
+          icon = "< LSP:",
+          color = { fg = colors.cyan, gui = "bold" },
+        },
+      }
+
+      -- 5. MANUALLY BUILD THE RIGHT SECTION (lualine_x)
+      config.sections.lualine_x = {
+        -- Encoding
+        {
+          "encoding",
+          fmt = string.upper,
+          cond = conditions.hide_in_width,
+          color = { fg = colors.green, gui = "bold" },
+        },
+        -- Fileformat
+        {
+          "fileformat",
+          fmt = string.upper,
+          icons_enabled = false,
+          color = { fg = colors.green, gui = "bold" },
+        },
+        -- Git Branch
+        {
+          "branch",
+          icon = "",
+          color = { fg = colors.violet, gui = "bold" },
+        },
+        -- Git Diff
+        {
+          "diff",
+          symbols = { added = " ", modified = " ", removed = " " },
+          diff_color = {
+            added = { fg = colors.green },
+            modified = { fg = colors.orange },
+            removed = { fg = colors.red },
+          },
+          cond = conditions.hide_in_width,
+        },
+        -- Right-Mmost bar
+        {
+          function()
+            return "|"
+          end,
+          color = { fg = colors.blue },
+          padding = { left = 1 },
+        },
+      }
+
+      -- 6. RETURN THE CONFIG
+      return config
+    end,
   },
 
   -- filename
