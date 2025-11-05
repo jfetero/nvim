@@ -17,6 +17,7 @@ return {
         "pyright",
         "tailwindcss-language-server",
         "typescript-language-server",
+        "mdformat",
         -- "css-lsp",
       })
     end,

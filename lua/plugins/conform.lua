@@ -39,7 +39,7 @@ return {
   {
     "stevearc/conform.nvim",
     opts = function(_, opts)
-      opts.formatters_by_ft.markdown = vim.list_extend(opts.formatters_by_ft.markdown or {}, { "mdslw", "mdformat" })
+      opts.formatters_by_ft.markdown = { "mdformat" }
       opts.formatters_by_ft.yaml = vim.list_extend(opts.formatters_by_ft.yaml or {}, { "keep-sorted", "yamlfmt" })
       opts.formatters_by_ft.json = vim.list_extend(opts.formatters_by_ft.json or {}, { "jq" })
       opts.formatters_by_ft.python = vim.list_extend(opts.formatters_by_ft.python or {}, { "isort", "black" })

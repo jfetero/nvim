@@ -34,3 +34,7 @@ keymap.set("i", "!", "!<c-g>u")
 keymap.set("i", "?", "?<c-g>u")
 keymap.set("i", "/", "/<c-g>u")
 keymap.set("i", "\\", "\\<c-g>u")
+
+-- Visual block insert
+keymap.set("x", "I", "<Esc>`<I")
+keymap.set("x", "A", "<Esc>`>A")
